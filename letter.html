@@ -134,11 +134,9 @@
 
 我知道，
 在妍妍心里有一堵很高的高墙，
-没法一下子推倒，
 妳不希望被推倒，
-倒下后露出毫无防备的自己，
-有时候的我会操之过急，
-让妳感觉到不安，
+害怕倒下后露出毫无防备的自己，
+那样的自己让妳感觉到不安，
 我明白这样的高墙需要用温柔的爱慢慢消融。
 
 没关系，
@@ -236,6 +234,7 @@
     if (i < text.length) {
       letterDiv.innerHTML += text.charAt(i);
       i++;
+      letterDiv.scrollTop = letterDiv.scrollHeight;
       setTimeout(typeWriter, 65); // 每个字符 65ms
     }
   }
