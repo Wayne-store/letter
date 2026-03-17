@@ -224,26 +224,30 @@
 重要的人不介意，
 也不用再想着逃跑，
 我会一直在这里，
-等妳，
-陪妳，
-爱妳，
+等妳，陪妳，爱妳，
 也会在妳需要的时候在妳身后紧紧抱着妳。
 妳一直都是那个最好的妍妍，
 我爱妳，
 也谢谢妳爱着我。`;
 
   // 打字动画
-function typeWriter() {
-  if (i < text.length) {
-    letterDiv.innerHTML += text.charAt(i);
-    i++;
-
-    // 自动滚动到最新文字
-    letterDiv.scrollTop = letterDiv.scrollHeight;
-
-    setTimeout(typeWriter, 65); // 打字速度
+  const letterDiv = document.getElementById('letter');
+  let i = 0;
+  function typeWriter() {
+    if (i < text.length) {
+      letterDiv.innerHTML += text.charAt(i);
+      i++;
+      letterDiv.scrollTop = letterDiv.scrollHeight;
+      setTimeout(typeWriter, 65); // 每个字符 65ms
+    }
   }
-}
+
+  // 点击信封显示信件
+  function openLetter(){
+    document.querySelector(".envelope").style.display="none";
+    document.getElementById("letter").style.display="block";
+    typeWriter();
+  }
 </script>
 
 </body>
