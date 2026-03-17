@@ -233,23 +233,19 @@
 也谢谢妳爱着我。`;
 
   // 打字动画
-  const letterDiv = document.getElementById('letter');
-  let i = 0;
-  function typeWriter() {
-    if (i < text.length) {
-      letterDiv.innerHTML += text.charAt(i);
-      i++;
-      letterDiv.scrollTop = letterDiv.scrollHeight;
-      setTimeout(typeWriter, 65); // 每个字符 65ms
-    }
-  }
+function typeWriter() {
+  if (i < text.length) {
+    letterDiv.textContent += text.charAt(i); // ✅ 改这里
+    i++;
 
-  // 点击信封显示信件
-  function openLetter(){
-    document.querySelector(".envelope").style.display="none";
-    document.getElementById("letter").style.display="block";
-    typeWriter();
+    // ✅ 只在接近底部才滚动（防抖动）
+    if (letterDiv.scrollHeight - letterDiv.scrollTop - letterDiv.clientHeight < 50) {
+      letterDiv.scrollTop = letterDiv.scrollHeight;
+    }
+
+    setTimeout(typeWriter, 65);
   }
+}
 </script>
 
 </body>
