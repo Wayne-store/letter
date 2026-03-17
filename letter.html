@@ -235,15 +235,13 @@
   // 打字动画
 function typeWriter() {
   if (i < text.length) {
-    letterDiv.textContent += text.charAt(i); // ✅ 改这里
+    letterDiv.innerHTML += text.charAt(i);
     i++;
 
-    // ✅ 只在接近底部才滚动（防抖动）
-    if (letterDiv.scrollHeight - letterDiv.scrollTop - letterDiv.clientHeight < 50) {
-      letterDiv.scrollTop = letterDiv.scrollHeight;
-    }
+    // 自动滚动到最新文字
+    letterDiv.scrollTop = letterDiv.scrollHeight;
 
-    setTimeout(typeWriter, 65);
+    setTimeout(typeWriter, 65); // 打字速度
   }
 }
 </script>
