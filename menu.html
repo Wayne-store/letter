@@ -5,44 +5,75 @@
 <title>给妳的世界</title>
 
 <style>
- body {
-    margin: 0;
-    padding: 0;
-    background: black;
-    color: white;
-    font-family: system-ui, sans-serif;
-    overflow: hidden;
-  }
-  .stars {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    overflow: hidden;
-    z-index: 0;
-  }
-  .star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.8;
-    animation: twinkle 2s infinite;
-  }
-  @keyframes twinkle {
-    0%,100% {opacity:0.2;}
-    50% {opacity:1;}
-  }
+body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  color: white;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* 星空 */
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 2s infinite;
+}
+
+@keyframes twinkle {
+  0%,100% {opacity:0.2;}
+  50% {opacity:1;}
+}
+
+/* 内容卡片 */
+.box {
+  position: relative;
+  z-index: 1;
+  max-width: 400px;
+  width: 90%;
+}
+
+/* 标题 */
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 16px;
+  margin-bottom: 30px;
+  opacity: 0.8;
+}
 
 /* 按钮 */
 .btn {
-  margin: 12px;
+  margin: 10px auto;
   padding: 12px 30px;
   border: 1px solid white;
   border-radius: 25px;
   cursor: pointer;
   transition: 0.3s;
+  width: 200px;
 }
 
 .btn:hover {
@@ -54,14 +85,21 @@
 
 <body>
 
-<h1> "妳是我温柔且坚定地选择" </h1>
-<h2> "心决定的事情，千言万语也说不清" </h2>
+<!-- 星空 -->
+<div class="stars" id="stars"></div>
 
-<div class="btn" onclick="goLetter()">💌 想对妳说的话</div>
-<div class="btn" onclick="goMemory()">🌙 那些回忆</div>
-<div class="btn" onclick="goFuture()">🫶 关于未来</div>
+<!-- 内容 -->
+<div class="box">
+  <h1>"妳是我温柔且坚定地选择"</h1>
+  <h2>"心决定的事情，千言万语也说不清"</h2>
+
+  <div class="btn" onclick="goLetter()">💌 想对妳说的话</div>
+  <div class="btn" onclick="goMemory()">🌙 那些回忆</div>
+  <div class="btn" onclick="goFuture()">🫶 关于未来</div>
+</div>
 
 <script>
+// 跳转
 function goLetter(){
   window.location.href = "letter.html";
 }
@@ -70,6 +108,18 @@ function goMemory(){
 }
 function goFuture(){
   window.location.href = "future.html";
+}
+
+// 星空生成
+const starsContainer = document.getElementById('stars');
+
+for (let i = 0; i < 120; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  star.style.top = Math.random() * 100 + '%';
+  star.style.left = Math.random() * 100 + '%';
+  star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+  starsContainer.appendChild(star);
 }
 </script>
 
