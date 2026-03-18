@@ -2,6 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>妳的专属入口</title>
 
 <style>
@@ -12,9 +13,16 @@ body {
   color: white;
   font-family: system-ui, sans-serif;
   overflow: hidden;
+
+  /* 居中内容 */
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center;     /* 垂直居中 */
+  height: 100vh;           /* 满屏高度 */
+  text-align: center;      /* 文本居中 */
 }
 
-/* 星空 */
+/* 星空层 */
 .stars {
   position: fixed;
   top: 0;
@@ -39,7 +47,7 @@ body {
   50% {opacity:1;}
 }
 
-/* 黑色遮罩（让文字更清楚） */
+/* 黑色遮罩 */
 body::before {
   content: "";
   position: fixed;
@@ -48,13 +56,15 @@ body::before {
   z-index: 0;
 }
 
-/* 内容 */
+/* 内容盒子 */
 .box {
-  position: relative;
-  text-align: center;
   z-index: 1;
   opacity: 0;
   animation: fadeIn 2s forwards;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @keyframes fadeIn {
@@ -91,7 +101,7 @@ body::before {
 
 <body>
 
-<!-- ⭐ 星空层 -->
+<!-- 星空层 -->
 <div class="stars" id="stars"></div>
 
 <div class="box">
@@ -113,7 +123,7 @@ function goMenu(){
   window.location.href = "menu.html";
 }
 
-// ⭐ 生成星星
+// 生成星星
 const starsContainer = document.getElementById('stars');
 
 for (let i = 0; i < 120; i++) {
