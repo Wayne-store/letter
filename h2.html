@@ -1,77 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>流光心</title>
+<style>
+body {
+  margin: 0;
+  background: black;
+  overflow: hidden;
+}
+</style>
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
 <script>
-const canvas = document.getElementById("heartCanvas");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+const scene = new THREE.Scene();
 
-let particles = [];
-const count = 1200;
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.z = 120;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
 // ❤️ 心形函数
 function heart(t) {
   const x = 16 * Math.pow(Math.sin(t), 3);
   const y = 13 * Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t);
-  return [x, y];
+  return new THREE.Vector3(x, y, 0);
 }
 
-// 💥 底部爆发点
-const origin = {
-  x: canvas.width / 2,
-  y: canvas.height * 0.75
-};
+// 💡 创建多条流线
+const lines = [];
 
-// 初始化粒子（从底部往心形飞）
-for (let i = 0; i < count; i++) {
-  let t = Math.random() * Math.PI;
-  let [hx, hy] = heart(t);
+for (let i = 0; i < 120; i++) {
+  const points = [];
 
-  particles.push({
-    t: t,
-    progress: Math.random(),
-    speed: Math.random() * 0.01 + 0.003,
-    targetX: canvas.width/2 + hx * 18,
-    targetY: canvas.height/2 - hy * 18
-  });
-}
+  for (let j = 0; j < 100; j++) {
+    let t = Math.PI * (j / 100);
+    let p = heart(t);
 
-function draw() {
-  // ✨ 拖影 + 柔光
-  ctx.fillStyle = "rgba(0,0,0,0.08)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // 💥 从底部发散
+    let start = new THREE.Vector3(0, -30, 0);
 
-  particles.forEach(p => {
-    p.progress += p.speed;
+    let mixed = start.clone().lerp(p.multiplyScalar(2), Math.random());
 
-    if (p.progress > 1) {
-      p.progress = 0;
-    }
+    points.push(mixed);
+  }
 
-    // 🌊 从底部流向心形
-    let x = origin.x + (p.targetX - origin.x) * p.progress;
-    let y = origin.y + (p.targetY - origin.y) * p.progress;
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-    // 💡 亮度
-    let glow = 1 - p.progress;
-
-    ctx.beginPath();
-    ctx.arc(x, y, 1.2, 0, Math.PI * 2);
-
-    ctx.fillStyle = `rgba(255,255,255,${glow})`;
-    ctx.shadowColor = "white";
-    ctx.shadowBlur = 20;
-
-    ctx.fill();
+  const material = new THREE.LineBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.4
   });
 
-  requestAnimationFrame(draw);
+  const line = new THREE.Line(geometry, material);
+  scene.add(line);
+  lines.push(line);
 }
 
-draw();
+// 🌟 粒子
+const particles = new THREE.BufferGeometry();
+const particleCount = 800;
+
+const pos = new Float32Array(particleCount * 3);
+
+for (let i = 0; i < particleCount; i++) {
+  pos[i*3] = (Math.random()-0.5)*100;
+  pos[i*3+1] = (Math.random()-0.5)*100;
+  pos[i*3+2] = (Math.random()-0.5)*100;
+}
+
+particles.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+
+const particleMat = new THREE.PointsMaterial({
+  color: 0xffffff,
+  size: 1.5
+});
+
+const pointMesh = new THREE.Points(particles, particleMat);
+scene.add(pointMesh);
+
+// 🎬 动画
+function animate() {
+  requestAnimationFrame(animate);
+
+  lines.forEach((line, i) => {
+    line.rotation.z += 0.002;
+  });
+
+  pointMesh.rotation.y += 0.001;
+
+  renderer.render(scene, camera);
+}
+
+animate();
 
 // 自适应
 window.addEventListener("resize", () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 </script>
+
+</body>
+</html>
