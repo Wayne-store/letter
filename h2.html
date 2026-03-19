@@ -1,19 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>流光心</title>
+<title>高级流光心</title>
 <style>
-body {
-  margin: 0;
-  background: black;
-  overflow: hidden;
-}
+body { margin:0; background:black; overflow:hidden; }
 </style>
 </head>
 <body>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
 
 <script>
 const scene = new THREE.Scene();
@@ -26,88 +22,91 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 120;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias:true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // ❤️ 心形函数
-function heart(t) {
-  const x = 16 * Math.pow(Math.sin(t), 3);
-  const y = 13 * Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t);
-  return new THREE.Vector3(x, y, 0);
+function heart(t){
+  let x = 16*Math.pow(Math.sin(t),3);
+  let y = 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+  return new THREE.Vector3(x,y,0);
 }
 
-// 💡 创建多条流线
-const lines = [];
+// 💥 创建流线
+const group = new THREE.Group();
 
-for (let i = 0; i < 120; i++) {
-  const points = [];
+for(let i=0;i<200;i++){
+  let pts = [];
 
-  for (let j = 0; j < 100; j++) {
-    let t = Math.PI * (j / 100);
+  let tStart = Math.random()*Math.PI;
+  let tEnd = Math.PI + Math.random()*Math.PI;
+
+  for(let j=0;j<80;j++){
+    let t = tStart + (tEnd - tStart)*(j/80);
     let p = heart(t);
 
-    // 💥 从底部发散
-    let start = new THREE.Vector3(0, -30, 0);
+    let base = new THREE.Vector3(0,-30,0);
 
-    let mixed = start.clone().lerp(p.multiplyScalar(2), Math.random());
+    let final = base.clone().lerp(p.multiplyScalar(2.2), j/80);
 
-    points.push(mixed);
+    // 加点扰动（流体感关键）
+    final.x += (Math.random()-0.5)*2;
+    final.y += (Math.random()-0.5)*2;
+
+    pts.push(final);
   }
 
-  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  let geo = new THREE.BufferGeometry().setFromPoints(pts);
 
-  const material = new THREE.LineBasicMaterial({
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0.4
+  let mat = new THREE.LineBasicMaterial({
+    color:0xffffff,
+    transparent:true,
+    opacity:0.3
   });
 
-  const line = new THREE.Line(geometry, material);
-  scene.add(line);
-  lines.push(line);
+  let line = new THREE.Line(geo,mat);
+  group.add(line);
 }
+
+scene.add(group);
 
 // 🌟 粒子
 const particles = new THREE.BufferGeometry();
-const particleCount = 800;
+const count = 1000;
 
-const pos = new Float32Array(particleCount * 3);
+let arr = new Float32Array(count*3);
 
-for (let i = 0; i < particleCount; i++) {
-  pos[i*3] = (Math.random()-0.5)*100;
-  pos[i*3+1] = (Math.random()-0.5)*100;
-  pos[i*3+2] = (Math.random()-0.5)*100;
+for(let i=0;i<count;i++){
+  arr[i*3]=(Math.random()-0.5)*120;
+  arr[i*3+1]=(Math.random()-0.5)*120;
+  arr[i*3+2]=0;
 }
 
-particles.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+particles.setAttribute("position", new THREE.BufferAttribute(arr,3));
 
-const particleMat = new THREE.PointsMaterial({
-  color: 0xffffff,
-  size: 1.5
+const pMat = new THREE.PointsMaterial({
+  color:0xffffff,
+  size:1.2
 });
 
-const pointMesh = new THREE.Points(particles, particleMat);
-scene.add(pointMesh);
+const mesh = new THREE.Points(particles,pMat);
+scene.add(mesh);
 
 // 🎬 动画
-function animate() {
+function animate(){
   requestAnimationFrame(animate);
 
-  lines.forEach((line, i) => {
-    line.rotation.z += 0.002;
-  });
+  group.rotation.z += 0.0015;
+  mesh.rotation.z -= 0.0005;
 
-  pointMesh.rotation.y += 0.001;
-
-  renderer.render(scene, camera);
+  renderer.render(scene,camera);
 }
 
 animate();
 
-// 自适应
-window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth/window.innerHeight;
+window.addEventListener("resize",()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
