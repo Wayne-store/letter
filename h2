@@ -1,0 +1,76 @@
+<script>
+const canvas = document.getElementById("heartCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+const count = 1200;
+
+// ❤️ 心形函数
+function heart(t) {
+  const x = 16 * Math.pow(Math.sin(t), 3);
+  const y = 13 * Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t);
+  return [x, y];
+}
+
+// 💥 底部爆发点
+const origin = {
+  x: canvas.width / 2,
+  y: canvas.height * 0.75
+};
+
+// 初始化粒子（从底部往心形飞）
+for (let i = 0; i < count; i++) {
+  let t = Math.random() * Math.PI;
+  let [hx, hy] = heart(t);
+
+  particles.push({
+    t: t,
+    progress: Math.random(),
+    speed: Math.random() * 0.01 + 0.003,
+    targetX: canvas.width/2 + hx * 18,
+    targetY: canvas.height/2 - hy * 18
+  });
+}
+
+function draw() {
+  // ✨ 拖影 + 柔光
+  ctx.fillStyle = "rgba(0,0,0,0.08)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.progress += p.speed;
+
+    if (p.progress > 1) {
+      p.progress = 0;
+    }
+
+    // 🌊 从底部流向心形
+    let x = origin.x + (p.targetX - origin.x) * p.progress;
+    let y = origin.y + (p.targetY - origin.y) * p.progress;
+
+    // 💡 亮度
+    let glow = 1 - p.progress;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+
+    ctx.fillStyle = `rgba(255,255,255,${glow})`;
+    ctx.shadowColor = "white";
+    ctx.shadowBlur = 20;
+
+    ctx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+// 自适应
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
