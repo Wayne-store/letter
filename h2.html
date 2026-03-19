@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>高级流光心</title>
+<title>Fluid Heart Ultimate</title>
 <style>
 body { margin:0; background:black; overflow:hidden; }
 </style>
@@ -10,105 +10,103 @@ body { margin:0; background:black; overflow:hidden; }
 <body>
 
 <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.152.2/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://unpkg.com/three@0.152.2/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://unpkg.com/three@0.152.2/examples/js/postprocessing/UnrealBloomPass.js"></script>
 
 <script>
+// ===== 基础 =====
 const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
+camera.position.z = 2;
 
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  1000
-);
-camera.position.z = 120;
-
-const renderer = new THREE.WebGLRenderer({ antialias:true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// ❤️ 心形函数
-function heart(t){
-  let x = 16*Math.pow(Math.sin(t),3);
-  let y = 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
-  return new THREE.Vector3(x,y,0);
-}
+// ===== Bloom =====
+const composer = new THREE.EffectComposer(renderer);
+composer.addPass(new THREE.RenderPass(scene, camera));
 
-// 💥 创建流线
-const group = new THREE.Group();
+const bloom = new THREE.UnrealBloomPass(
+  new THREE.Vector2(innerWidth, innerHeight),
+  2.2, // 强度（关键）
+  0.4,
+  0.85
+);
+composer.addPass(bloom);
 
-for(let i=0;i<200;i++){
-  let pts = [];
+// ===== Shader 材质 =====
+const material = new THREE.ShaderMaterial({
+  uniforms: {
+    u_time: { value: 0 }
+  },
+  vertexShader: `
+    void main() {
+      gl_Position = vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    precision highp float;
+    uniform float u_time;
 
-  let tStart = Math.random()*Math.PI;
-  let tEnd = Math.PI + Math.random()*Math.PI;
+    // ❤️ 心形函数
+    float heart(vec2 p){
+      p *= 1.5;
+      float x = p.x;
+      float y = p.y;
+      return pow(x*x + y*y - 1.0, 3.0) - x*x*y*y*y;
+    }
 
-  for(let j=0;j<80;j++){
-    let t = tStart + (tEnd - tStart)*(j/80);
-    let p = heart(t);
+    // 🌊 noise（流体关键）
+    float noise(vec2 p){
+      return sin(p.x*3.0 + u_time) * sin(p.y*3.0 + u_time);
+    }
 
-    let base = new THREE.Vector3(0,-30,0);
+    void main(){
+      vec2 uv = gl_FragCoord.xy / vec2(${window.innerWidth.toFixed(1)}, ${window.innerHeight.toFixed(1)});
+      uv = uv * 2.0 - 1.0;
 
-    let final = base.clone().lerp(p.multiplyScalar(2.2), j/80);
+      uv.x *= ${ (window.innerWidth / window.innerHeight).toFixed(3) };
 
-    // 加点扰动（流体感关键）
-    final.x += (Math.random()-0.5)*2;
-    final.y += (Math.random()-0.5)*2;
+      // 💥 流体扭曲
+      float n = noise(uv * 2.0);
+      uv += n * 0.05;
 
-    pts.push(final);
-  }
+      // ❤️ 心形边界
+      float h = heart(uv);
 
-  let geo = new THREE.BufferGeometry().setFromPoints(pts);
+      // ✨ 光带
+      float glow = smoothstep(0.02, 0.0, abs(h));
 
-  let mat = new THREE.LineBasicMaterial({
-    color:0xffffff,
-    transparent:true,
-    opacity:0.3
-  });
+      // 💥 底部爆发
+      float dist = length(uv - vec2(0.0, -0.6));
+      float burst = 0.02 / dist;
 
-  let line = new THREE.Line(geo,mat);
-  group.add(line);
-}
+      float finalGlow = glow + burst;
 
-scene.add(group);
-
-// 🌟 粒子
-const particles = new THREE.BufferGeometry();
-const count = 1000;
-
-let arr = new Float32Array(count*3);
-
-for(let i=0;i<count;i++){
-  arr[i*3]=(Math.random()-0.5)*120;
-  arr[i*3+1]=(Math.random()-0.5)*120;
-  arr[i*3+2]=0;
-}
-
-particles.setAttribute("position", new THREE.BufferAttribute(arr,3));
-
-const pMat = new THREE.PointsMaterial({
-  color:0xffffff,
-  size:1.2
+      gl_FragColor = vec4(vec3(finalGlow), 1.0);
+    }
+  `
 });
 
-const mesh = new THREE.Points(particles,pMat);
+// 全屏平面
+const geometry = new THREE.PlaneGeometry(2,2);
+const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
-// 🎬 动画
+// ===== 动画 =====
 function animate(){
   requestAnimationFrame(animate);
-
-  group.rotation.z += 0.0015;
-  mesh.rotation.z -= 0.0005;
-
-  renderer.render(scene,camera);
+  material.uniforms.u_time.value += 0.03;
+  composer.render();
 }
-
 animate();
 
-window.addEventListener("resize",()=>{
-  camera.aspect=window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+// 自适应
+window.addEventListener("resize", ()=>{
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
 });
 </script>
 
