@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>妳的专属入口</title>
+
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  color: white;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+}
+
+/* ❤️ 爱心Canvas */
+#heartCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background: black;
+}
+
+/* 星空层 */
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 2s infinite;
+}
+
+@keyframes twinkle {
+  0%,100% {opacity:0.2;}
+  50% {opacity:1;}
+}
+
+/* 黑色遮罩 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 0;
+}
+
+/* 内容盒子（初始隐藏） */
+.box {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  height: 100vh;
+  text-align: center;
+}
+
+/* 淡入 */
+.show {
+  animation: fadeIn 2s forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.text {
+  font-size: 15px;
+  margin-bottom: 30px;
+  line-height: 1.8;
+}
+
+/* 按钮 */
+.btn {
+  padding: 12px 30px;
+  border: 1px solid white;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s;
+  opacity: 0;
+  animation: showBtn 2s 1.5s forwards;
+}
+
+@keyframes showBtn {
+  to { opacity: 1; }
+}
+
+.btn:hover {
+  background: white;
+  color: black;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ❤️ 爱心动画 -->
+<canvas id="heartCanvas"></canvas>
+
+<!-- 星空 -->
+<div class="stars" id="stars"></div>
+
+<!-- 内容 -->
+<div class="box" id="mainContent">
+  <div class="text">
+    如果妳愿意点进来<br>
+    我就当作<br>
+    妳愿意让我再靠近一点<br>
+    我把想告诉妳的都记录在这里<br>
+    只要妳想，随时可以确认<br><br>
+    "这一百步都由我来"
+  </div>
+
+  <div class="btn" onclick="goMenu()">进入</div>
+</div>
+
+<script>
+// ================= ❤️ 爱心动画 =================
+const canvas = document.getElementById("heartCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+const numParticles = 400;
+
+function heart(t) {
+  const x = 16 * Math.pow(Math.sin(t), 3);
+  const y = 13 * Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t);
+  return [x * 20, -y * 20];
+}
+
+for (let i = 0; i < numParticles; i++) {
+  let t = Math.random() * Math.PI * 2;
+  let [x, y] = heart(t);
+  particles.push({
+    t,
+    speed: Math.random()*0.02+0.01,
+    x: canvas.width/2 + x,
+    y: canvas.height/2 + y,
+    r: Math.random()*2+1
+  });
+}
+
+function animate() {
+  ctx.fillStyle = "rgba(0,0,0,0.2)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p=>{
+    p.t += p.speed;
+    let [x,y] = heart(p.t);
+    p.x = canvas.width/2 + x;
+    p.y = canvas.height/2 + y;
+
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle = "pink";
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ================= ⭐ 星空 =================
+const starsContainer = document.getElementById('stars');
+for (let i = 0; i < 120; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  star.style.top = Math.random() * 100 + '%';
+  star.style.left = Math.random() * 100 + '%';
+  star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+  starsContainer.appendChild(star);
+}
+
+// ================= 🎬 过场控制 =================
+setTimeout(()=>{
+  // 爱心淡出
+  canvas.style.transition = "opacity 2s";
+  canvas.style.opacity = 0;
+
+  // 显示文字
+  document.getElementById("mainContent").classList.add("show");
+}, 6000); // 👉 这里改时间（6000 = 6秒）
+
+// ================= 跳转 =================
+function goMenu(){
+  window.location.href = "menu.html";
+}
+</script>
+
+</body>
+</html>
