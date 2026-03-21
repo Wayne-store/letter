@@ -4,81 +4,113 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>给妳的信</title>
+
 <style>
-  /* 背景星空 */
-  body {
-    margin: 0;
-    padding: 0;
-    background: black;
-    color: white;
-    font-family: system-ui, sans-serif;
-    overflow: hidden;
-  }
-  .stars {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    overflow: hidden;
-    z-index: 0;
-  }
-  .star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.8;
-    animation: twinkle 2s infinite;
-  }
-  @keyframes twinkle {
-    0%,100% {opacity:0.2;}
-    50% {opacity:1;}
-  }
+body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  color: white;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+}
 
-  /* 信件容器 */
-  .container {
-    position: relative;
-    margin: 50px auto;
-    width: 80%;
-    max-width: 700px;
-    line-height: 1.9;
-    font-size: 18px;
-    white-space: pre-wrap;
-    overflow-y: auto;
-    max-height: 90vh;
-    z-index: 1;
-    background: rgba(0,0,0,0.8); /* 半透明黑色背景 */
-    padding: 20px;
-    border-radius: 10px;
-  }
+/* 星空 */
+.stars {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
 
-  /* 信封按钮 */
-  .envelope {
-    position: fixed;
-    top:50%;
-    left:50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
-    padding: 20px 40px;
-    background: #ff8c00;
-    border-radius: 10px;
-    cursor: pointer;
-    z-index: 2;
-  }
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: twinkle 2s infinite;
+}
+
+@keyframes twinkle {
+  0%,100% {opacity:0.2;}
+  50% {opacity:1;}
+}
+
+/* 信件 */
+.container {
+  position: relative;
+  margin: 50px auto;
+  width: 80%;
+  max-width: 700px;
+  line-height: 1.9;
+  font-size: 18px;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  max-height: 90vh;
+  z-index: 1;
+  background: rgba(0,0,0,0.8);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* 按钮 */
+.backBtn {
+  display: none;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.backBtn button {
+  padding: 12px 26px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(45deg,#ff8c00,#ff5e62);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.backBtn button:hover {
+  transform: scale(1.08);
+}
+
+/* 信封 */
+.envelope {
+  position: fixed;
+  top:50%;
+  left:50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  padding: 20px 40px;
+  background: #ff8c00;
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 2;
+}
 </style>
 </head>
+
 <body>
 
 <div class="stars" id="stars"></div>
 
-<div class="envelope" onclick="openLetter()">💌 满月当时</div>
+<div class="envelope" onclick="openLetter()">💌 打开信封</div>
 
-<div class="container" id="letter" style="display:none;"></div>
+<div class="container" id="letter" style="display:none;">
+  <div id="content"></div>
+
+  <div class="backBtn" id="backBtn">
+    <button onclick="goBack()">返回选择其他信</button>
+  </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // 生成星星
+
+  // 星星
   const starsContainer = document.getElementById('stars');
   for(let i=0;i<100;i++){
     const star = document.createElement('div');
@@ -89,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     starsContainer.appendChild(star);
   }
 
-  // 信件内容
+  // 内容
   const text = `
 
 认识时间不长 但也陪伴过很多个夜晚
@@ -121,36 +153,36 @@ Everything happens for you, not to you
 
 送妳我最喜欢的一句话 per aspera ad astra 意思是颠跛路途终能抵达繁星
 
-
-「辞冬」这个名字像是冬天里最后一场雪，轻轻落下之后，万物开始悄悄苏醒。
-妳并非告别寒冷，而是替这个季节取了一个有温度的名字。
-妳的存在，就像这个名字一样，有节制的温柔，也有坚定的力量。不喧哗，却一直在影响别人，用自己的方式安静地发光。
-虽然妳总是说没事自己可以的，但我知道妳心很软，所以我才会在这封信里多说一点，把想讲的话都写下来，这样就能让妳多听见一点属于妳自己的好。
-
-
 最后
 愿妍妍不再委屈 不再因为难过而掉泪 小脾气永远有人哄 所愿皆成真 永远可爱
 追光的人终会光芒万丈 加油
 要相信世上总有人会为妳放一场盛大的烟花`;
 
-  const letterDiv = document.getElementById('letter');
+  const content = document.getElementById('content');
   let i = 0;
 
   function typeWriter() {
     if (i < text.length) {
-      letterDiv.innerHTML += text.charAt(i);
+      content.innerHTML += text.charAt(i);
       i++;
-      letterDiv.scrollTop = letterDiv.scrollHeight;
+      content.scrollTop = content.scrollHeight;
       setTimeout(typeWriter, 65);
+    } else {
+      // 打完显示按钮
+      document.getElementById("backBtn").style.display = "block";
     }
   }
 
-  // 全局函数，供 onclick 调用
   window.openLetter = function() {
     document.querySelector(".envelope").style.display = "none";
-    letterDiv.style.display = "block";
+    document.getElementById("letter").style.display = "block";
     typeWriter();
   }
+
+  window.goBack = function() {
+    window.location.href = "menus.html"; // 👉 改成你的上一页
+  }
+
 });
 </script>
 
