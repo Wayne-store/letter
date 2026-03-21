@@ -121,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
     starsContainer.appendChild(star);
   }
 
-  // 信件内容（✅已帮你完整放入）
   const text = `宝宝：
   
 "妳值得被安稳的爱着"
@@ -270,13 +269,29 @@ document.addEventListener('DOMContentLoaded', function() {
 也谢谢妳选择这样的我，爱着我。`;
 
   const content = document.getElementById('content');
+  const container = document.getElementById('letter');
+
   let i = 0;
+  let autoScroll = true;
+
+  // ✅ 监听用户滚动
+  container.addEventListener("scroll", function () {
+    const isAtBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight < 20;
+
+    autoScroll = isAtBottom;
+  });
 
   function typeWriter() {
     if (i < text.length) {
       content.innerHTML += text.charAt(i);
       i++;
-      content.scrollTop = content.scrollHeight;
+
+      // ✅ 只有在“用户在底部”才自动滚动
+      if (autoScroll) {
+        container.scrollTop = container.scrollHeight;
+      }
+
       setTimeout(typeWriter, 65);
     } else {
       document.getElementById("backBtn").style.display = "block";
@@ -286,6 +301,10 @@ document.addEventListener('DOMContentLoaded', function() {
   window.openLetter = function() {
     document.querySelector(".envelope").style.display = "none";
     document.getElementById("letter").style.display = "block";
+
+    // 一开始默认在底部
+    container.scrollTop = container.scrollHeight;
+
     typeWriter();
   }
 
