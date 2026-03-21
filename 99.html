@@ -1,1 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>给妳的信</title>
 
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  color: white;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+}
+
+/* 星空 */
+.stars {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: twinkle 2s infinite;
+}
+
+@keyframes twinkle {
+  0%,100% {opacity:0.2;}
+  50% {opacity:1;}
+}
+
+/* 信件 */
+.container {
+  position: relative;
+  margin: 50px auto;
+  width: 80%;
+  max-width: 700px;
+  line-height: 1.9;
+  font-size: 18px;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  max-height: 90vh;
+  z-index: 1;
+  background: rgba(0,0,0,0.8);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* 返回按钮 */
+.backBtn {
+  display: none;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.backBtn button {
+  padding: 12px 26px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(45deg,#ff8c00,#ff5e62);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.backBtn button:hover {
+  transform: scale(1.08);
+}
+
+/* 信封 */
+.envelope {
+  position: fixed;
+  top:50%;
+  left:50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  padding: 20px 40px;
+  background: #ff8c00;
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 2;
+}
+</style>
+</head>
+
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="envelope" onclick="openLetter()">💌 打开信封</div>
+
+<div class="container" id="letter" style="display:none;">
+  <div id="content"></div>
+
+  <div class="backBtn" id="backBtn">
+    <button onclick="goBack()">上一页</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // 星星
+  const starsContainer = document.getElementById('stars');
+  for(let i=0;i<100;i++){
+    const star = document.createElement('div');
+    star.className='star';
+    star.style.top = Math.random()*100 + '%';
+    star.style.left = Math.random()*100 + '%';
+    star.style.animationDuration = (Math.random()*3+2) + 's';
+    starsContainer.appendChild(star);
+  }
+
+  const text = `认识时间不长 但也陪伴过很多个夜晚
+我要是再年轻几岁我可能会洋洋洒洒的写一大堆
+给我收藏好了不要偷给人看MD不然我会碎牌子
+既然妳前几天已经说没哭点了 那妳就随便看看吧 遇到委屈掏出来看看也行
+很多话我可能说过很多次 妳就当做是一个总结呗
+
+"妳已经做的很好了" 如果哪天妳受委屈了我刚好在忙 替我先说给妳自己听 我随后就到
+
+Everything happens for you, not to you
+这世界即使坑坑洞洞 依旧会有人拿着鲜花向你走来
+所以不要对这世界失望 要相信自己值得世上大多数的美好
+而那些不起眼的日复一日 会在未来的某天让妳看到坚持的意义 不要轻易放弃
+生活不如意的时候就在这些琐碎的小美好中去感受来自时间的温柔 就像妳说的 遇见温柔才会变得温柔
+
+妳是很勇敢的女孩 比大多数的人都更有勇气 也一直在追逐自己梦想的路上努力
+即使妳嘴硬不说 但我知道妳也是会脆弱的人 善待他人的同时别忘了也要善待自己
+如果有需要我陪伴的地方 不需要害怕和我求助 在我这妳可以放心当个小孩子 力所能及的范围我都会在 但希望不会再卖我
+记得自己漂亮的眼睛要拿来纪录美好 而不是掉难过眼泪
+没有花一开始就是一朵花 不用非要成为世人期盼的样子 
+这些过程都会是你成长路上的养分 所以也不用羡慕别人 妳有妳耀眼的特点
+
+人的一生里面会有许多个夏天 但应该没有哪一个会像今年的夏天一样了 非常幸运遇见妳遇见大家
+我从来就不是温柔的人 但对于妳我尽我所能
+身为过来人 我希望妳做自己想做的 想看海就去看 想吃美食就去吃 
+我都会支持妳 在我面前可以放心做自己无需强颜欢笑 我逗妳笑就行 愿妳天天快乐 我会陪妳不到需要我的那天
+照顾好自己的身体 别熬夜太晚太累 我比任何人都希望妳好
+
+送妳我最喜欢的一句话 per aspera ad astra 意思是颠跛路途终能抵达繁星
+
+最后
+愿妍妍不再委屈 不再因为难过而掉泪 小脾气永远有人哄 所愿皆成真 永远可爱
+追光的人终会光芒万丈 加油
+要相信世上总有人会为妳放一场盛大的烟花`;
+
+  const content = document.getElementById('content');
+  const container = document.getElementById('letter');
+
+  let i = 0;
+  let autoScroll = true;
+
+  // ✅ 监听用户滚动
+  container.addEventListener("scroll", function () {
+    const isAtBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight < 20;
+
+    autoScroll = isAtBottom;
+  });
+
+  function typeWriter() {
+    if (i < text.length) {
+      content.innerHTML += text.charAt(i);
+      i++;
+
+      // ✅ 只有在“用户在底部”才自动滚动
+      if (autoScroll) {
+        container.scrollTop = container.scrollHeight;
+      }
+
+      setTimeout(typeWriter, 65);
+    } else {
+      document.getElementById("backBtn").style.display = "block";
+    }
+  }
+
+  window.openLetter = function() {
+    document.querySelector(".envelope").style.display = "none";
+    document.getElementById("letter").style.display = "block";
+
+    // 一开始默认在底部
+    container.scrollTop = container.scrollHeight;
+
+    typeWriter();
+  }
+
+  window.goBack = function() {
+    window.location.href = "menus.html";
+  }
+
+});
+</script>
+
+</body>
+</html>
