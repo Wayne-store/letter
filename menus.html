@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- ✅ 关键：手机适配 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>给妳的世界</title>
@@ -22,6 +21,9 @@ body {
   align-items: center;
   height: 100vh;
   text-align: center;
+
+  /* 🔥 整体字体放大 */
+  font-size: 18px;
 }
 
 /* 星空 */
@@ -55,32 +57,34 @@ body {
   z-index: 1;
   max-width: 420px;
   width: 90%;
+
+  /* 🔥 微放大一点更舒服 */
+  transform: scale(1.05);
 }
 
-/* 标题（✅ 手机自适应） */
+/* 🔥 标题放大 */
 h1 {
-  font-size: clamp(20px, 5vw, 28px);
-  margin-bottom: 12px;
+  font-size: clamp(26px, 7vw, 36px);
+  margin-bottom: 16px;
 }
 
 h2 {
-  font-size: clamp(14px, 4vw, 18px);
-  margin-bottom: 35px;
-  opacity: 0.85;
+  font-size: clamp(18px, 5vw, 22px);
+  margin-bottom: 40px;
+  opacity: 0.9;
 }
 
-/* 按钮 */
+/* 🔥 按钮放大 */
 .btn {
-  margin: 12px auto;
-  padding: 14px 30px;
+  margin: 14px auto;
+  padding: 16px 32px;
   border: 1px solid white;
   border-radius: 25px;
   cursor: pointer;
   transition: 0.3s;
-  width: 220px;
+  width: 240px;
 
-  /* ✅ 手机点击更舒服 */
-  font-size: clamp(14px, 4vw, 16px);
+  font-size: clamp(16px, 4.5vw, 18px);
 }
 
 .btn:hover {
@@ -95,8 +99,8 @@ h2 {
 <div class="stars" id="stars"></div>
 
 <div class="box">
-  <h1>"妳是我温柔且坚定地选择"</h1>
-  <h2>"心决定的事情，千言万语也说不清"</h2>
+  <h1>"讨厌异地恋一百次"</h1>
+  <h2>"但我会爱上你一百零一次"</h2>
 
   <div class="btn" onclick="goLetter()">💌 满月的话 </div>
   <div class="btn" onclick="goMemory()">🌙 2025/9/9 </div>
