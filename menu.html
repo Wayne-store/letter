@@ -2,6 +2,10 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
+
+<!-- ✅ 关键：手机适配 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>给妳的世界</title>
 
 <style>
@@ -49,31 +53,34 @@ body {
 .box {
   position: relative;
   z-index: 1;
-  max-width: 400px;
+  max-width: 420px;
   width: 90%;
 }
 
-/* 标题 */
+/* 标题（✅ 手机自适应） */
 h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
+  font-size: clamp(20px, 5vw, 28px);
+  margin-bottom: 12px;
 }
 
 h2 {
-  font-size: 16px;
-  margin-bottom: 30px;
-  opacity: 0.8;
+  font-size: clamp(14px, 4vw, 18px);
+  margin-bottom: 35px;
+  opacity: 0.85;
 }
 
 /* 按钮 */
 .btn {
-  margin: 10px auto;
-  padding: 12px 30px;
+  margin: 12px auto;
+  padding: 14px 30px;
   border: 1px solid white;
   border-radius: 25px;
   cursor: pointer;
   transition: 0.3s;
-  width: 200px;
+  width: 220px;
+
+  /* ✅ 手机点击更舒服 */
+  font-size: clamp(14px, 4vw, 16px);
 }
 
 .btn:hover {
@@ -85,10 +92,8 @@ h2 {
 
 <body>
 
-<!-- 星空 -->
 <div class="stars" id="stars"></div>
 
-<!-- 内容 -->
 <div class="box">
   <h1>"妳是我温柔且坚定地选择"</h1>
   <h2>"心决定的事情，千言万语也说不清"</h2>
@@ -110,9 +115,8 @@ function goFuture(){
   window.location.href = "menu.html";
 }
 
-// 星空生成
+// 星空
 const starsContainer = document.getElementById('stars');
-
 for (let i = 0; i < 120; i++) {
   const star = document.createElement('div');
   star.className = 'star';
